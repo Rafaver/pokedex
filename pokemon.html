@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f4f4; /* Cambia el color de fondo aquí */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Aquí está la imagen en la parte superior -->
+        <img src="../static/imagen.jpg" class="img-fluid" alt="Imagen de Pokemon">
+
+        <!-- Aquí está la barra de búsqueda -->
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Buscar un Pokemon" aria-label="Buscar un Pokemon">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button">Buscar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
