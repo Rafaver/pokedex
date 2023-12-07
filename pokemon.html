@@ -1,60 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokemon</title>
+    <link rel="icon" type="image/x-icon" href="{{url_for('static',filename= 'logo.jpg')}}">
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="icon" type="image/x-icon" href="https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F2%2F23%2FPok%25C3%25A9_Ball.svg%2F2057px-Pok%25C3%25A9_Ball.svg.png&tbnid=55dWI0jhfvOGpM&vet=12ahUKEwiG5teDi_yCAxVUtYQIHes2C1gQMygQegUIARCOAQ..i&imgrefurl=https%3A%2F%2Fen.m.wikipedia.org%2Fwiki%2FFile%3APok%25C3%25A9_Ball.svg&docid=xNm-xIMAWceh2M&w=2057&h=2048&q=pokeball&ved=2ahUKEwiG5teDi_yCAxVUtYQIHes2C1gQMygQegUIARCOAQ">
     <style>
         body {
-            background-color: #f4f4f4;
-            /* Cambia el color de fondo aquí */
+            background-color: #f4f4f4; /* Cambia el color de fondo aquí */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-
         .container {
             text-align: center;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <img src="../static/logo.jpg" class="img-fluid" alt="Imagen de Pokemon">
-
-        <form method="post">
+        <img src="../static/imagen.jpg" class="img-fluid" alt="Imagen de Pokemon">
+        <!-- Formulario de búsqueda -->
+        <form id="searchForm">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Buscar un Pokemon" aria-label="Buscar un Pokemon">
+                <input type="text" class="form-control" id="pokemonName" placeholder="Buscar un Pokémon" aria-label="Buscar un Pokémon">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-
-                    <form>
-
-
+                    <button class="btn btn-outline-secondary" type="button" onclick="searchPokemon()">Buscar</button>
                 </div>
             </div>
-            <div class="d-flex justify-content-center">
-                <div class="card" style="width: 18rem;">
-                    <img src="data:image/jpeg;base64,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"
-                        class="card-img-top" alt="imagen de pokemon">
-                    <div class="card-body">
-                        <h5 class="card-title">Torterra</h5>
-                        <p class="card-text">height: se declara elle</p>
-                        <p class="card-text">weight</p>
-                            </p>
-                        <a href="#" class="btn btn-primary">Capturar</a>
-                        <a href="#" class="btn btn-primary">Detalle</a>
-                    </div>
+        </form>
+
+        <!-- Contenedor para mostrar la imagen del Pokémon -->
+        <div id="pokemonContainer" style="display: none;">
+            <div class="card" style="width: 18rem;">
+            <img src="" id="pokemonImage" class="img-fluid" alt="Imagen de Pokémon">
+                <div class="card-body">
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                 </div>
-            </div>
+              
+            <button class="btn btn-primary" onclick="capturePokemon()">Capturar</button>
+            <a href="/detalle" class="btn btn-info">Detalle</a>
+        </div>
     </div>
 
-</body>
+    <script>
+        function searchPokemon() {
+            const pokemonName = document.getElementById('pokemonName').value.toLowerCase();
 
+            fetch(`/pokemon/${pokemonName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const pokemonImage = document.getElementById('pokemonImage');
+                    const pokemonContainer = document.getElementById('pokemonContainer');
+
+                    if (data.error) {
+                        alert(data.error);
+                        pokemonContainer.style.display = 'none';
+                    } else {
+                        pokemonImage.src = data.image;
+                        pokemonContainer.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al buscar el Pokémon:', error);
+                    alert('Error al buscar el Pokémon');
+                });
+        }
+
+        function capturePokemon() {
+            // Lógica para capturar el Pokémon
+            alert('¡Has capturado al Pokémon!');
+        }
+    </script>
+</body>
 </html>
