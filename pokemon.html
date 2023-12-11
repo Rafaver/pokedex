@@ -19,11 +19,17 @@
         .container {
             text-align: center;
         }
+        .pokemon-image {
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="../static/imagen.jpg" class="img-fluid" alt="Imagen de Pokemon">
+        <!-- Imagen del Pokémon -->
+        <img src="../static/imagen.jpg" class="pokemon-image img-fluid" alt="Imagen de Pokemon">
+        
         <!-- Formulario de búsqueda -->
         <form id="searchForm">
             <div class="input-group mb-3">
@@ -37,13 +43,14 @@
         <!-- Contenedor para mostrar la imagen del Pokémon -->
         <div id="pokemonContainer" style="display: none;">
             <div class="card" style="width: 18rem;">
-            <img src="" id="pokemonImage" class="img-fluid" alt="Imagen de Pokémon">
+                <img src="" id="pokemonImage" class="img-fluid" alt="Imagen de Pokémon">
                 <div class="card-body">
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <p class="card-text" id="pokemonNameDisplay"></p>
                 </div>
               
-            <button class="btn btn-primary" onclick="capturePokemon()">Capturar</button>
-            <a href="/detalle" class="btn btn-info">Detalle</a>
+                <button class="btn btn-primary" onclick="capturePokemon()">Capturar</button>
+                <a href="/detalle" class="btn btn-info">Detalle</a>
+            </div>
         </div>
     </div>
 
@@ -55,6 +62,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const pokemonImage = document.getElementById('pokemonImage');
+                    const pokemonNameDisplay = document.getElementById('pokemonNameDisplay');
                     const pokemonContainer = document.getElementById('pokemonContainer');
 
                     if (data.error) {
@@ -62,6 +70,7 @@
                         pokemonContainer.style.display = 'none';
                     } else {
                         pokemonImage.src = data.image;
+                        pokemonNameDisplay.textContent = data.name;
                         pokemonContainer.style.display = 'block';
                     }
                 })
