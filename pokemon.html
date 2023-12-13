@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokemon</title>
-    <link rel="icon" type="image/x-icon" href="{{url_for('static',filename= 'logo.jpg')}}">
-
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #f4f4f4; /* Cambia el color de fondo aquí */
+            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -27,10 +26,8 @@
 </head>
 <body>
     <div class="container">
-        <!-- Imagen del Pokémon -->
         <img src="../static/imagen.jpg" class="pokemon-image img-fluid" alt="Imagen de Pokemon">
         
-        <!-- Formulario de búsqueda -->
         <form id="searchForm">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" id="pokemonName" placeholder="Buscar un Pokémon" aria-label="Buscar un Pokémon">
@@ -40,7 +37,6 @@
             </div>
         </form>
 
-        <!-- Contenedor para mostrar la imagen del Pokémon -->
         <div id="pokemonContainer" style="display: none;">
             <div class="card" style="width: 18rem;">
                 <img src="" id="pokemonImage" class="img-fluid" alt="Imagen de Pokémon">
@@ -81,8 +77,17 @@
         }
 
         function capturePokemon() {
-            // Lógica para capturar el Pokémon
-            alert('¡Has capturado al Pokémon!');
+            const pokemonName = document.getElementById('pokemonNameDisplay').textContent;
+
+            fetch(`/insert?name=${pokemonName}`)
+                .then(response => response.text())
+                .then(result => {
+                    alert(result); 
+                })
+                .catch(error => {
+                    console.error('Error al capturar el Pokémon:', error);
+                    alert('Error al capturar el Pokémon');
+                });
         }
     </script>
 </body>
