@@ -22,6 +22,13 @@
             display: block;
             margin: 0 auto;
         }
+        .pokemon-details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .pokemon-details p {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +49,12 @@
                 <img src="" id="pokemonImage" class="img-fluid" alt="Imagen de Pokémon">
                 <div class="card-body">
                     <p class="card-text" id="pokemonNameDisplay"></p>
+                    <div class="pokemon-details">
+                        <p>Height: <span id="pokemonHeight"></span></p>
+                        <p>Weight: <span id="pokemonWeight"></span></p>
+                        <p>Order: <span id="pokemonOrder"></span></p>
+                        <p>Type: <span id="pokemonType"></span></p>
+                    </div>
                 </div>
               
                 <button class="btn btn-primary" onclick="capturePokemon()">Capturar</button>
@@ -60,6 +73,10 @@
                     const pokemonImage = document.getElementById('pokemonImage');
                     const pokemonNameDisplay = document.getElementById('pokemonNameDisplay');
                     const pokemonContainer = document.getElementById('pokemonContainer');
+                    const pokemonHeight = document.getElementById('pokemonHeight');
+                    const pokemonWeight = document.getElementById('pokemonWeight');
+                    const pokemonOrder = document.getElementById('pokemonOrder');
+                    const pokemonType = document.getElementById('pokemonType');
 
                     if (data.error) {
                         alert(data.error);
@@ -67,6 +84,10 @@
                     } else {
                         pokemonImage.src = data.image;
                         pokemonNameDisplay.textContent = data.name;
+                        pokemonHeight.textContent = data.height;
+                        pokemonWeight.textContent = data.weight;
+                        pokemonOrder.textContent = data.order;
+                        pokemonType.textContent = data.type;
                         pokemonContainer.style.display = 'block';
                     }
                 })
