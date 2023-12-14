@@ -1,21 +1,19 @@
 from flask import Flask, render_template, jsonify, request
 import requests
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column 
 
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pokedex.sqlite"
 db = SQLAlchemy(app)
 
-class Pokedex(db.Model):
+class Pokemon(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
-    height:Mapped[float]=mapped_column(db.float,nullable=False)
-    weight:Mapped[float]=mapped_column(db.float,nullable=False)
-    order:Mapped[int]=mapped_column(db.Integer,nullable=False)
-    type:Mapped[str]=mapped_column(db.String,nullable=False)
+    height = db.Column(db.Float, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    order = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.String, nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -26,9 +24,13 @@ def get_pokemon_data(pokemon):
     if r.status_code == 200:
         data = r.json()
         image_url = data['sprites']['front_default']
-        return image_url
+        height = data['height']
+        weight = data['weight']
+        order = data['order']
+        types = ', '.join([t['type']['name'] for t in data['types']])
+        return image_url, height, weight, order, types
     else:
-        return None
+        return None, None, None, None, None
 
 @app.route("/")
 def home():
@@ -36,9 +38,16 @@ def home():
 
 @app.route("/pokemon/<name>")
 def search_pokemon(name):
-    pokemon_data = get_pokemon_data(name.lower())
-    if pokemon_data:
-        return jsonify({'image': pokemon_data, 'name': name})
+    image_url, height, weight, order, types = get_pokemon_data(name.lower())
+    if image_url:
+        return jsonify({
+            'image': image_url,
+            'name': name,
+            'height': height,
+            'weight': weight,
+            'order': order,
+            'type': types
+        })
     else:
         return jsonify({'error': f'No se encontró ningún Pokémon con el nombre {name}'}), 404
 
@@ -46,31 +55,21 @@ def search_pokemon(name):
 def insert():
     pokemon_name = request.args.get('name')
     if pokemon_name:
-        obj = Pokedex(name=pokemon_name)
-        db.session.add(obj)
-        db.session.commit()
-        return 'Pokemon agregado'
+        image_url, height, weight, order, types = get_pokemon_data(pokemon_name)
+        if image_url:
+            obj = Pokemon(name=pokemon_name, height=height, weight=weight, order=order, type=types)
+            db.session.add(obj)
+            db.session.commit()
+            return 'Pokemon agregado'
+        else:
+            return 'No se encontró el Pokemon en la API'
     else:
         return 'No se proporcionó el nombre del Pokemon'
 
-
-@app.route("/selectbyname/<name>")
-def selectbyname():
-   poke = Pokedex.query.filter_by(name=name).first()
-   return str(poke.id)+str(poke.name)
-
-@app.route("/selectbyid/<id>")
-def selectbyid():
-   poke = Pokedex.query.filter_by(id=id).first()
-   return str(poke.id)+str(poke.name)
-
-@app.route ("/deletebyid/<id>")
-def deletebyid(id):
-    pokemon_a_eliminar =Pokemon.query.filter_by (id=id).first()
-    db.session.delete(pokemon_a_eliminar)
-    db.session.commit()
-    return 'Pokemon Eliminado'
-
+@app.route("/select")
+def select():
+    lista_pokemon = Pokemon.query.all()
+    return lista_pokemon
 
 if __name__ == '__main__':
     app.run(debug=True)
