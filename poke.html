@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        /* Tu estilo CSS */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="../static/imagen.jpg" class="pokemon-image img-fluid" alt="Imagen de Pokemon">
+        
+        <form id="searchForm">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="pokemonName" placeholder="Buscar un Pokémon" aria-label="Buscar un Pokémon">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="searchPokemon()">Buscar</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="pokemonContainer" style="display: none;">
+            <div class="card" style="width: 18rem;">
+                <img src="" id="pokemonImage" class="img-fluid" alt="Imagen de Pokémon">
+                <div class="card-body">
+                    <p class="card-text" id="pokemonNameDisplay"></p>
+                    <div class="pokemon-details">
+                        <p>Height: <span id="pokemonHeight"></span></p>
+                        <p>Weight: <span id="pokemonWeight"></span></p>
+                        <p>Order: <span id="pokemonOrder"></span></p>
+                        <p>Type: <span id="pokemonType"></span></p>
+                    </div>
+                </div>
+              
+                <button class="btn btn-primary" onclick="capturePokemon()">Capturar</button>
+                <a href="#" id="detalleLink" class="btn btn-primary" style="display: none;">Detalle</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function searchPokemon() {
+            const pokemonName = document.getElementById('pokemonName').value.toLowerCase();
+
+            fetch(`/pokemon/${pokemonName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const pokemonImage = document.getElementById('pokemonImage');
+                    const pokemonNameDisplay = document.getElementById('pokemonNameDisplay');
+                    const pokemonContainer = document.getElementById('pokemonContainer');
+                    const pokemonHeight = document.getElementById('pokemonHeight');
+                    const pokemonWeight = document.getElementById('pokemonWeight');
+                    const pokemonOrder = document.getElementById('pokemonOrder');
+                    const pokemonType = document.getElementById('pokemonType');
+                    const detalleLink = document.getElementById('detalleLink');
+
+                    if (data.error) {
+                        alert(data.error);
+                        pokemonContainer.style.display = 'none';
+                        detalleLink.style.display = 'none';
+                    } else {
+                        pokemonImage.src = data.image;
+                        pokemonNameDisplay.textContent = data.name;
+                        pokemonHeight.textContent = data.height;
+                        pokemonWeight.textContent = data.weight;
+                        pokemonOrder.textContent = data.order;
+                        pokemonType.textContent = data.type;
+                        pokemonContainer.style.display = 'block';
+                        detalleLink.href = `/detalle/${pokemonName}`;
+                        detalleLink.style.display = 'inline-block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al buscar el Pokémon:', error);
+                    alert('Error al buscar el Pokémon');
+                });
+        }
+
+        function capturePokemon() {
+            const pokemonName = document.getElementById('pokemonNameDisplay').textContent;
+
+            fetch(`/insert?name=${pokemonName}`)
+                .then(response => response.text())
+                .then(result => {
+                    alert(result); 
+                })
+                .catch(error => {
+                    console.error('Error al capturar el Pokémon:', error);
+                    alert('Error al capturar el Pokémon');
+        });
+    }
+</script>
+</body>
+</html>
