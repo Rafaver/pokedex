@@ -28,18 +28,13 @@ def get_pokemon_data(pokemon):
         weight = data['weight']
         order = data['order']
         types = ', '.join([t['type']['name'] for t in data['types']])
-
-        # Nuevas estadísticas adicionales
+        
         stats = {
-            'HP': data['stats'][5]['base_stat'],  # 'hp' está representado como 'HP' en la API
+            'HP': data['stats'][5]['base_stat'],  
             'ataque': data['stats'][4]['base_stat'],
             'defensa': data['stats'][3]['base_stat'],
             'velocidad': data['stats'][0]['base_stat']
-            # Agrega más estadísticas si es necesario
         }
-
-        # Peso que come (un ejemplo de dato personalizado)
-        peso_comida = 50  # Esto debe ser ajustado a la información real del Pokémon
 
         return {
             'image': image_url,
@@ -49,7 +44,6 @@ def get_pokemon_data(pokemon):
             'order': order,
             'type': types,
             'stats': stats,
-            'peso_comida': peso_comida
         }
     else:
         return None
@@ -70,16 +64,21 @@ def search_pokemon(name):
 def insert():
     pokemon_name = request.args.get('name')
     if pokemon_name:
-        image_url, height, weight, order, types = get_pokemon_data(pokemon_name)
-        if image_url:
+        pokemon_data = get_pokemon_data(pokemon_name)
+        if pokemon_data:
+            image_url = pokemon_data['image']
+            height = pokemon_data['height']
+            weight = pokemon_data['weight']
+            order = pokemon_data['order']
+            types = pokemon_data['type']
             obj = Pokemon(name=pokemon_name, height=height, weight=weight, order=order, type=types)
             db.session.add(obj)
             db.session.commit()
             return 'Pokemon agregado'
         else:
-            return 'No se encontró el Pokemon en la API'
+            return 'No se encontró el Pokémon en la API'
     else:
-        return 'No se proporcionó el nombre del Pokemon'
+        return 'No se proporcionó el nombre del Pokémon'
 
 @app.route("/detalle/<pokemon_name>")
 def detalle(pokemon_name):
