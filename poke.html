@@ -7,7 +7,28 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.jpg') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
-        /* Tu estilo CSS */
+         body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .pokemon-image {
+            display: block;
+            margin: 0 auto;
+        }
+        .pokemon-details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .pokemon-details p {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -47,7 +68,12 @@
             const pokemonName = document.getElementById('pokemonName').value.toLowerCase();
 
             fetch(`/pokemon/${pokemonName}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se encontró el Pokémon');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     const pokemonImage = document.getElementById('pokemonImage');
                     const pokemonNameDisplay = document.getElementById('pokemonNameDisplay');
@@ -58,41 +84,50 @@
                     const pokemonType = document.getElementById('pokemonType');
                     const detalleLink = document.getElementById('detalleLink');
 
-                    if (data.error) {
-                        alert(data.error);
-                        pokemonContainer.style.display = 'none';
-                        detalleLink.style.display = 'none';
-                    } else {
-                        pokemonImage.src = data.image;
-                        pokemonNameDisplay.textContent = data.name;
-                        pokemonHeight.textContent = data.height;
-                        pokemonWeight.textContent = data.weight;
-                        pokemonOrder.textContent = data.order;
-                        pokemonType.textContent = data.type;
-                        pokemonContainer.style.display = 'block';
-                        detalleLink.href = `/detalle/${pokemonName}`;
-                        detalleLink.style.display = 'inline-block';
-                    }
+                    pokemonImage.src = data.image;
+                    pokemonNameDisplay.textContent = data.name;
+                    pokemonHeight.textContent = data.height;
+                    pokemonWeight.textContent = data.weight;
+                    pokemonOrder.textContent = data.order;
+                    pokemonType.textContent = data.type;
+                    pokemonContainer.style.display = 'block';
+                    detalleLink.href = `/detalle/${pokemonName}`;
+                    detalleLink.style.display = 'inline-block';
                 })
                 .catch(error => {
                     console.error('Error al buscar el Pokémon:', error);
-                    alert('Error al buscar el Pokémon');
+                    alert('No se encontró el Pokémon');
                 });
         }
 
         function capturePokemon() {
-            const pokemonName = document.getElementById('pokemonNameDisplay').textContent;
+    const pokemonName = document.getElementById('pokemonName').value.toLowerCase();
 
-            fetch(`/insert?name=${pokemonName}`)
-                .then(response => response.text())
-                .then(result => {
-                    alert(result); 
-                })
-                .catch(error => {
-                    console.error('Error al capturar el Pokémon:', error);
-                    alert('Error al capturar el Pokémon');
+    // Obtener los datos mostrados en pantalla
+    const pokemonImage = document.getElementById('pokemonImage').src;
+    const pokemonNameDisplay = document.getElementById('pokemonNameDisplay').textContent;
+    const pokemonHeight = document.getElementById('pokemonHeight').textContent;
+    const pokemonWeight = document.getElementById('pokemonWeight').textContent;
+    const pokemonOrder = document.getElementById('pokemonOrder').textContent;
+    const pokemonType = document.getElementById('pokemonType').textContent;
+
+    // Enviar los datos a la ruta de Flask para guardarlos en la base de datos
+    fetch(`/insert?name=${pokemonNameDisplay}&image=${pokemonImage}&height=${pokemonHeight}&weight=${pokemonWeight}&order=${pokemonOrder}&type=${pokemonType}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al capturar el Pokémon');
+            }
+            return response.text();
+        })
+        .then(result => {
+            alert(result);
+        })
+        .catch(error => {
+            console.error('Error al capturar el Pokémon:', error);
+            alert('Error al capturar el Pokémon');
         });
-    }
-</script>
+}
+
+    </script>
 </body>
 </html>
